@@ -1,0 +1,39 @@
+﻿@page "/ThirdPage"
+
+@using MudBlazor
+
+@inject GemsEnterprisePluginHelper PluginHelper
+@inject NavigationManager NavigationManager
+@inject GemsLanguageService LanguageService
+
+<MudText Typo="Typo.h6" Color="Color.Primary">@PluginHelper.Translate("page-three-title")</MudText>
+<MudButton StartIcon="@Icons.Material.Filled.Home" Color="Color.Inherit" Href="gems-enterprise-gproduction-GemsEnterpriseApp">@PluginHelper.Translate("page-three-prompt")</MudButton>
+
+@code 
+{
+    protected override void OnInitialized()
+    {
+        if (PluginHelper.CheckInitialized(NavigationManager))
+            try
+            {
+                OnLanguageChange(PluginHelper.WebAppSession.WebAppDisplaySettings.Language);
+
+                LanguageService.OnLanguageChange += OnLanguageChange;
+
+                PluginHelper.SetUserPrompt("page-three-prompt");
+
+                // Add additional code as needed
+
+                PluginHelper.WebAppLogger.LogInfo($"Successful initialization of ThirdPage");
+            }
+            catch (Exception e)
+            {
+                PluginHelper.WebAppLogger.LogError($"Failed initialization of ThirdPage {e.Message}");
+            }
+    }
+
+    void OnLanguageChange(string languageID)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

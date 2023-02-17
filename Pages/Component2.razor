@@ -1,0 +1,13 @@
+﻿@using MudBlazor
+
+<MudItem xs="12" md="12">
+    <MudCheckBox @bind-Checked="@Option7" Label="7" Color="Color.Default" />
+    <MudCheckBox @bind-Checked="@Option8" Label="8" Color="Color.Primary" />
+    <MudCheckBox @bind-Checked="@Option9" Label="9" Color="Color.Secondary" />
+</MudItem>
+
+@code {
+    public bool Option7 { get; set; }
+    public bool Option8 { get; set; }
+    public bool Option9 { get; set; }
+}

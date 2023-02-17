@@ -1,0 +1,44 @@
+﻿@using MudBlazor
+
+<MudSelect T="Option" @bind-Value="@option" ToStringFunc="@converter" Label="Select the option" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined" Clearable>
+    <MudSelectItem Value="@(new Option() { Name="1"})" />
+    <MudSelectItem  Value="@(new Option() { Name="2"})" />
+    <MudSelectItem  Value="@(new Option() { Name="3"})" />
+</MudSelect>
+
+<MudText Typo="Typo.h6" Class="mud-width-full">
+    @if(@option.Name == "1")
+    {
+        <Component1/>
+    }
+    @if (@option.Name == "2")
+    {
+        <Component2/>
+    }
+    @if (@option.Name == "3")
+    {
+        <Component3/>
+    }
+
+</MudText>
+
+@code {
+    Option option = new Option { Name = "1" };
+    public string componentName = "Component";
+
+    public class Option
+    {
+        public string Name { get; set; }
+
+        // Note: this is important so the select can compare options
+        public override bool Equals(object o) {
+            var other = o as Option;
+            return other?.Name==Name;
+        }
+
+        // Note: this is important so the select can compare options
+        public override int GetHashCode() => Name.GetHashCode();
+    }
+
+    Func<Option,string> converter = p => p?.Name;
+}

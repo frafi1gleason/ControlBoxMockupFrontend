@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Authors>Gleason Employee</Authors>
+		<Company>Gleason Corporation</Company>
+		<Product>Gems.Enterprise.WebApp.FirstApplication</Product>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<Copyright>The Gleason Works</Copyright>
+		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="wwwroot\**\*" />
+		<EmbeddedResource Include="docs\**\*" />
+		<EmbeddedResource Include="images\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Gems.WebApps" Version="1.0.33" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.12" />
+		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.2" />
+	</ItemGroup>
+</Project>
