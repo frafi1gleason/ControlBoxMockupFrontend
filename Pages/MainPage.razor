@@ -12,14 +12,12 @@
 @inject GemsLanguageService LanguageService
 
 @* This markup will be merged with the @Body of the plugin wrapper layout *@
+
 <MudText Typo="Typo.h6" Color="Color.Primary">@PluginHelper.Translate("main-page-title")</MudText>
 <MudButton StartIcon="@Icons.Material.Filled.NavigateNext" Color="Color.Inherit" Href="SecondPage">@PluginHelper.Translate("main-page-prompt")</MudButton>
 
-<br/>
-<br/>
-<br/>
-
-<List/>
+@*Displays the control box on MainPage*@
+<MainContainer/>
 
 @code
 {

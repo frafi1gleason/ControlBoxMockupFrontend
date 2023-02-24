@@ -1,0 +1,46 @@
+﻿@using MudBlazor
+@using System.Reflection
+
+
+@*Dialog box that displays a text box and a list of options. Writing a string in the text box and choosing the relevant
+    options would make a custom option
+*@
+<MudDialog>
+    <DialogContent>
+        <MudContainer Label="Optimization Matrix" MaxWidth="MaxWidth.Small">
+            <MudPaper Class="pa-16 ma-2" Color="Lighten1" Label="Optimization Matrix" Outlined="true" Square="true">
+                <MudTextField oninput="@TextValueChanged" @bind-Value="@TextValue" Label="Name" Variant="Variant.Filled"></MudTextField>
+
+                <h6>@TextValue</h6>
+
+                @*This component would have all the properties that are available in the current context*@
+                <AllComponents></AllComponents>s
+
+        </MudPaper>
+</MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+
+    [Parameter]
+    public string TextValue { get; set; }
+
+    // Gets the value of the text entered in the text box
+    public void TextValueChanged(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        TextValue = (string)args.Value;
+    }
+
+    // Dialog box contents
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Submit()
+    {
+        MudDialog.Close(new Tuple<DialogResult, string>(DialogResult.Ok(true), TextValue));
+    }
+    void Cancel() => MudDialog.Cancel();
+}

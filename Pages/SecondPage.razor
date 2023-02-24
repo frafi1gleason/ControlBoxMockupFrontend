@@ -2,17 +2,19 @@
 
 @using MudBlazor
 
+
 @inject GemsEnterprisePluginHelper PluginHelper
 @inject NavigationManager NavigationManager
 @inject GemsLanguageService LanguageService
 
 <MudText Typo="Typo.h6" Color="Color.Primary">@PluginHelper.Translate("page-two-title")</MudText>
-<MudButton StartIcon="@Icons.Material.Filled.NavigateNext" Color="Color.Inherit" Href="ThirdPage">@PluginHelper.Translate("page-two-prompt")</MudButton>
+<MudButton StartIcon="@Icons.Material.Filled.Home" Color="Color.Inherit" Href="ThirdPage">@PluginHelper.Translate("page-two-prompt")</MudButton>
 
 @code 
 {
     protected override void OnInitialized()
     {
+
         if (PluginHelper.CheckInitialized(NavigationManager))
             try
             {

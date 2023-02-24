@@ -1,0 +1,54 @@
+﻿@using MudBlazor
+@inject IDialogService DialogService
+
+<MudButton @onclick="OpenBox" Variant="Variant.Filled" Color="Color.Primary">Recipe</MudButton>
+
+
+
+@code {
+ 
+    [Parameter]
+    public string? RecipeButtonResult
+    {
+        get => _recipeButtonResult;
+        set
+        {
+            if (value != null && value != _recipeButtonResult)
+            {
+                _recipeButtonResult = value;
+                StateHasChanged();
+                NotifyMyValueChanged();
+            }
+        }
+    }
+
+    private string? _recipeButtonResult;
+
+    [Parameter]
+    public EventCallback<string> MyValueChanged { get; set; }
+    private async Task NotifyMyValueChanged()
+    {
+        await MyValueChanged.InvokeAsync(RecipeButtonResult);
+
+    }
+
+    // Getting the text in the text field present in the dialog box.
+    private async Task OpenBox()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialogResult = await DialogService.Show<RecipeBox>("Simple Dialog", options).Result;
+        if (dialogResult != null)
+        {
+            if (dialogResult.Data is Tuple<DialogResult, string>)
+            {
+                var convData = dialogResult.Data as Tuple<DialogResult, string>;
+                if(convData !=  null)
+                {
+                _recipeButtonResult = convData.Item2;
+                }
+            }
+        }
+
+    }
+
+}

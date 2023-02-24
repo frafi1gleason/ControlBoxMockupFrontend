@@ -1,44 +1,101 @@
 ﻿@using MudBlazor
+@using System.Reflection
 
-<MudSelect T="Option" @bind-Value="@option" ToStringFunc="@converter" Label="Select the option" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined" Clearable>
-    <MudSelectItem Value="@(new Option() { Name="1"})" />
-    <MudSelectItem  Value="@(new Option() { Name="2"})" />
-    <MudSelectItem  Value="@(new Option() { Name="3"})" />
-</MudSelect>
 
-<MudText Typo="Typo.h6" Class="mud-width-full">
-    @if(@option.Name == "1")
-    {
-        <Component1/>
-    }
-    @if (@option.Name == "2")
-    {
-        <Component2/>
-    }
-    @if (@option.Name == "3")
-    {
-        <Component3/>
-    }
+<MudText Typo="Typo.h6">Optimization Matrix</MudText>
 
-</MudText>
+<MudContainer Class="d-flex justify-start flex-grow-1 gap-4" MaxWidth="MaxWidth.Small">
+
+    <RecipeButton @bind-RecipeButtonResult="RecipeButtonResult"/>
+
+    <MudSelect T="Option" @bind-Value="@option" ToStringFunc="@converter" AnchorOrigin="Origin.BottomCenter" Label="Select an option" Variant="Variant.Outlined" Clearable>
+  
+        @foreach (var item in _items)
+        {
+            <MudSelectItem Value="@(new Option() { Name=item})" />
+        }
+
+    </MudSelect>
+</MudContainer>
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudExpansionPanel IsExpanded="true" Text="Values">
+        <MudText Type="Type.h6" Class="mud-width-full">
+            @if (@option.Name.Equals("1"))
+            {
+                <Component1 />
+            }
+            @if (@option.Name.Equals("2"))
+            {
+                <Component2 />
+            }
+            @if (@option.Name.Equals("3"))
+            {
+                <Component3 />
+            }
+            @if (@option.Name.Equals(null))
+            {
+                isNull = true;
+            }
+        </MudText>
+    </MudExpansionPanel>
+</MudContainer>
 
 @code {
+
+
+    public string? RecipeButtonResult
+    {
+        get => _RecipeButtonResult;
+        set      
+        {
+            _RecipeButtonResult = value;
+            _items.Add(value);
+            StateHasChanged();
+        }
+
+    }
+    private string? _RecipeButtonResult;
+
+    public string choiceSelected = "";
+    List<string> _items = new List<string>
+    {
+        "test1", "test2", "test3"
+    };
+
+    public Boolean isNull = false;
+
     Option option = new Option { Name = "1" };
-    public string componentName = "Component";
+
 
     public class Option
     {
         public string Name { get; set; }
 
         // Note: this is important so the select can compare options
-        public override bool Equals(object o) {
+        public override bool Equals(object o)
+        {
             var other = o as Option;
-            return other?.Name==Name;
+            return other?.Name == Name;
         }
 
         // Note: this is important so the select can compare options
         public override int GetHashCode() => Name.GetHashCode();
     }
 
-    Func<Option,string> converter = p => p?.Name;
+
+    Func<Option, string> converter = p => p?.Name;
+
+    
+    //protected override async Task OnInitializedAsync()
+    //{
+        
+    //    SendingItem obj = new SendingItem();
+    //    var recieve = await obj.returnRef();
+    //    newOption = obj.get();
+
+    //    StateHasChanged();
+
+    //}
+    
 }

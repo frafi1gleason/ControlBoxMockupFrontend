@@ -1,19 +1,63 @@
 ﻿@using MudBlazor
+@using System.Reflection
+@using Gems.Enterprise.WebApp.FirstApplication.Models
+
 
 <MudItem xs="12" md="12">
-    <MudCheckBox @bind-Checked="@Option1" Label="1" Color="Color.Default" />
-    <MudCheckBox @bind-Checked="@Option2" Label="2" Color="Color.Primary" />
-    <MudCheckBox @bind-Checked="@Option3" Label="3" Color="Color.Secondary" />
-    <MudCheckBox @bind-Checked="@Option4" Label="4" Color="Color.Default" />
-    <MudCheckBox @bind-Checked="@Option5" Label="5" Color="Color.Primary" />
-    <MudCheckBox @bind-Checked="@Option6" Label="6" Color="Color.Secondary" />
+
+    @*<MudCheckBox @bind-Checked="Option1" Label="1" Color="Color.Default" />
+    <MudCheckBox @bind-Checked="Option2" Label="2" Color="Color.Primary" />
+    <MudCheckBox @bind-Checked="Option3" Label="3" Color="Color.Secondary" />
+    <MudCheckBox @bind-Checked="Option4" Label="4" Color="Color.Default" />
+    <MudCheckBox @bind-Checked="Option5" Label="5" Color="Color.Primary" />
+    <MudCheckBox @bind-Checked="Option6" Label="6" Color="Color.Secondary" />
+    <MudCheckBox @bind-Checked="Option6" Label="7" Color="Color.Secondary" />*@
+
+
+ @*Task => Trying to tie in the concepts of reflection, two-way data binding with Mudblazor*@
+    @if(_loadedProperties?.Count > 0)
+{   @foreach(var prop in _loadedProperties)
+    {
+
+            bool propVal = (bool)prop.GetValue(_Person);
+            var propStr = prop.Name;
+        
+        @*if (prop.GetValue(_Person)?.GetType() == typeof(string))
+        {
+            <MudTextField T="string" Value="@((string)prop?.GetValue(_Person))" ValueChanged="@(s=>OnUpdate(s, prop))"></MudTextField>
+        }*@
+
+        
+            // FieldInfo fld = typeof(Options).GetField(propStr);
+
+        //
+        <MudCheckBox @bind-Checked="@value" Label=@(propVal.ToString()) Color="Color.Secondary" />
+        
+
+        // <h1>Name is @propStr and value is @propVal</h1> 
+    }
+}
+
+
 </MudItem>
 
 @code {
-    public bool Option1 { get; set; }
-    public bool Option2 { get; set; }
-    public bool Option3 { get; set; }
-    public bool Option4 { get; set; }
-    public bool Option5 { get; set; }
-    public bool Option6 { get; set; }
+    bool value = false;
+
+    private Options _Person = new Options();
+    private List<PropertyInfo> _loadedProperties;
+
+    protected override void OnInitialized()
+    {
+        _loadedProperties = _Person.GetType().GetProperties().ToList();
+        StateHasChanged();
+    }
+
+
+    @*
+    public void OnUpdate(Object obj, var)
+    {
+        
+    }
+    *@
 }
