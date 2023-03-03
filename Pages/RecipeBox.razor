@@ -1,7 +1,6 @@
 ﻿@using MudBlazor
 @using System.Reflection
 
-
 @*Dialog box that displays a text box and a list of options. Writing a string in the text box and choosing the relevant
     options would make a custom option
 *@
@@ -11,10 +10,8 @@
             <MudPaper Class="pa-16 ma-2" Color="Lighten1" Label="Optimization Matrix" Outlined="true" Square="true">
                 <MudTextField oninput="@TextValueChanged" @bind-Value="@TextValue" Label="Name" Variant="Variant.Filled"></MudTextField>
 
-                <h6>@TextValue</h6>
-
                 @*This component would have all the properties that are available in the current context*@
-                <AllComponents></AllComponents>s
+                <AllComponents></AllComponents>
 
         </MudPaper>
 </MudContainer>
@@ -28,6 +25,10 @@
 
     [Parameter]
     public string TextValue { get; set; }
+
+    [Parameter]
+    public Dictionary<string, bool> RecievedItems { get; set; }
+
 
     // Gets the value of the text entered in the text box
     public void TextValueChanged(Microsoft.AspNetCore.Components.ChangeEventArgs args)

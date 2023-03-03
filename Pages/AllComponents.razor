@@ -1,24 +1,48 @@
 ﻿@using MudBlazor
+@using Gems.Enterprise.WebApp.FirstApplication.Models
+@using System.Reflection
 
 <MudItem xs="12" md="12">
-    <MudCheckBox @bind-Checked="@Option1" Label="this" Color="Color.Default" />
-    <MudCheckBox @bind-Checked="@Option2" Label="is" Color="Color.Primary" />
-    <MudCheckBox @bind-Checked="@Option3" Label="an" Color="Color.Secondary" />
-    <MudCheckBox @bind-Checked="@Option4" Label="example" Color="Color.Primary" />
-    <MudCheckBox @bind-Checked="@Option6" Label="of" Color="Color.Default" />
-    <MudCheckBox @bind-Checked="@Option7" Label="test" Color="Color.Primary" />
-    <MudCheckBox @bind-Checked="@Option8" Label="data" Color="Color.Secondary" />
-    <MudCheckBox @bind-Checked="@Option9" Label="checkboxes" Color="Color.Secondary" />
+
+    @if(_loadedProperties.Count > 0)
+    {
+        @foreach(var prop in _loadedProperties)
+        {
+            var value = bool.Parse(prop.GetValue(_Choices).ToString());
+
+            <MudCheckBox T ="bool" Checked="@value" CheckedChanged="(v) => {prop.SetValue(_Choices, v); }" Label="@prop.Name"></MudCheckBox>
+
+            _selectedChoices[prop.Name] = value;
+
+        }
+        
+    }
 </MudItem>
 
 @code {
-    public bool Option1 { get; set; }
-    public bool Option2 { get; set; }
-    public bool Option3 { get; set; }
-    public bool Option4 { get; set; }
-    public bool Option5 { get; set; }
-    public bool Option6 { get; set; }
-    public bool Option7 { get; set; }
-    public bool Option8 { get; set; }
-    public bool Option9 { get; set; }
+
+    // Changing the name of the model would change the list of options available in the component
+    private AllOptions _Choices = new AllOptions();
+
+    // Helper variable for building the dictionary with the inital data from the model
+    private string name = "";
+
+    // Dictionary that actively stores all the names of the options selected and their active state i.e., true or false (true means would be included and vice versa)
+    private Dictionary<string, bool> _selectedChoices = new Dictionary<string, bool>();
+
+    private List<PropertyInfo> _loadedProperties;
+
+    protected override void OnInitialized()
+    {
+        _loadedProperties = _Choices.GetType().GetProperties().ToList();
+        foreach(PropertyInfo variable in _loadedProperties)
+        {
+            bool value = bool.Parse(variable.GetValue(_Choices).ToString());
+
+            name = variable.Name;
+
+            _selectedChoices.Add(name, value);
+        }
+        base.OnInitialized();
+    }
 }

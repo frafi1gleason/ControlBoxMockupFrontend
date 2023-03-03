@@ -5,59 +5,36 @@
 
 <MudItem xs="12" md="12">
 
-    @*<MudCheckBox @bind-Checked="Option1" Label="1" Color="Color.Default" />
-    <MudCheckBox @bind-Checked="Option2" Label="2" Color="Color.Primary" />
-    <MudCheckBox @bind-Checked="Option3" Label="3" Color="Color.Secondary" />
-    <MudCheckBox @bind-Checked="Option4" Label="4" Color="Color.Default" />
-    <MudCheckBox @bind-Checked="Option5" Label="5" Color="Color.Primary" />
-    <MudCheckBox @bind-Checked="Option6" Label="6" Color="Color.Secondary" />
-    <MudCheckBox @bind-Checked="Option6" Label="7" Color="Color.Secondary" />*@
-
-
- @*Task => Trying to tie in the concepts of reflection, two-way data binding with Mudblazor*@
-    @if(_loadedProperties?.Count > 0)
-{   @foreach(var prop in _loadedProperties)
+ @*Two way binding the reflected properties*@ 
+    @if (_loadedProperties?.Count > 0)
     {
-
-            bool propVal = (bool)prop.GetValue(_Person);
-            var propStr = prop.Name;
-        
-        @*if (prop.GetValue(_Person)?.GetType() == typeof(string))
+        @foreach (var prop in _loadedProperties)
         {
-            <MudTextField T="string" Value="@((string)prop?.GetValue(_Person))" ValueChanged="@(s=>OnUpdate(s, prop))"></MudTextField>
-        }*@
+            // Getting the value of the property from the list of loaded properties
+            var value = bool.Parse(prop.GetValue(_Choices).ToString());
 
-        
-            // FieldInfo fld = typeof(Options).GetField(propStr);
+            // This tag uses reflection to reflect the properties present in the model and actively sets them on checking
+            <MudCheckBox T="bool"
+             Checked="@value"
+             CheckedChanged="(v) => { prop.SetValue(_Choices, v); }"
+             Label="@prop.Name" />
 
-        //
-        <MudCheckBox @bind-Checked="@value" Label=@(propVal.ToString()) Color="Color.Secondary" />
-        
-
-        // <h1>Name is @propStr and value is @propVal</h1> 
+        }
     }
-}
-
-
 </MudItem>
 
-@code {
-    bool value = false;
 
-    private Options _Person = new Options();
+@code {
+
+    // Changing the name of the model would change the list of options available in the component
+    private Options1 _Choices = new Options1();
+
     private List<PropertyInfo> _loadedProperties;
 
     protected override void OnInitialized()
     {
-        _loadedProperties = _Person.GetType().GetProperties().ToList();
+        _loadedProperties = _Choices.GetType().GetProperties().ToList();
         StateHasChanged();
     }
 
-
-    @*
-    public void OnUpdate(Object obj, var)
-    {
-        
-    }
-    *@
 }

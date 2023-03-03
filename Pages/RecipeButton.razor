@@ -6,45 +6,52 @@
 
 
 @code {
- 
+
+    // The ? tells that this string can be null
     [Parameter]
-    public string? RecipeButtonResult
+    public string? Recipe
     {
-        get => _recipeButtonResult;
+        get => _Recipe;
         set
         {
-            if (value != null && value != _recipeButtonResult)
+            if(value != null && value != _Recipe)
             {
-                _recipeButtonResult = value;
-                StateHasChanged();
-                NotifyMyValueChanged();
+                _Recipe = value;
+                NotifyRecipesUpdated();
             }
         }
     }
-
-    private string? _recipeButtonResult;
+    private string? _Recipe;
 
     [Parameter]
-    public EventCallback<string> MyValueChanged { get; set; }
-    private async Task NotifyMyValueChanged()
-    {
-        await MyValueChanged.InvokeAsync(RecipeButtonResult);
+    public EventCallback<string> RecipeChanged { get; set; }
 
+    private async Task NotifyRecipesUpdated()
+    {
+        await RecipeChanged.InvokeAsync(Recipe);
     }
 
     // Getting the text in the text field present in the dialog box.
     private async Task OpenBox()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        // awaiting the result of Dialog Box being closed. Doesn't cause other tasks to halt.
         var dialogResult = await DialogService.Show<RecipeBox>("Simple Dialog", options).Result;
         if (dialogResult != null)
         {
+            // If the data returned is a tuple, then this block is executed
             if (dialogResult.Data is Tuple<DialogResult, string>)
             {
+
+                // Storing the tuple in convData
                 var convData = dialogResult.Data as Tuple<DialogResult, string>;
                 if(convData !=  null)
                 {
-                _recipeButtonResult = convData.Item2;
+
+                    // Retrieving the second item in the tuple i.e., the string that was typed in as the name of the 
+                    // custom recipe
+                    Recipe = convData.Item2;
                 }
             }
         }

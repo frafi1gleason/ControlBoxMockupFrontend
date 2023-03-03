@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "aIdfIaaUqd+DCavymZST0zETXTTzeXiN1it2Qm81FtNp5rM91K+7J3yfXoc8Ayh6egVnWsqxoz8NYPYoO9xz2w==",
+  "dgSpecHash": "bQ8akpgvFsKvK3qwo9B9lCkqpKbY4trjdcljPjrOzbh5qx/y2NlRdaz0wGHG0UUr3FwShuNAEFsKQpWTqpMjTQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\frafieuddin\\source\\repos\\Gems.Enterprise.WebApp.FirstApplication\\Gems.Enterprise.WebApp.FirstApplication.csproj",
   "expectedPackageFiles": [
@@ -22,6 +22,7 @@
     "C:\\Users\\frafieuddin\\.nuget\\packages\\gems.enterprise.gproduction.client\\3.0.0-exp.151\\gems.enterprise.gproduction.client.3.0.0-exp.151.nupkg.sha512",
     "C:\\Users\\frafieuddin\\.nuget\\packages\\gems.enterprise.gtools.client\\3.0.0-exp.151\\gems.enterprise.gtools.client.3.0.0-exp.151.nupkg.sha512",
     "C:\\Users\\frafieuddin\\.nuget\\packages\\gems.enterprise.guptime.client\\3.0.0-exp.151\\gems.enterprise.guptime.client.3.0.0-exp.151.nupkg.sha512",
+    "C:\\Users\\frafieuddin\\.nuget\\packages\\gems.gage.models\\1.0.2\\gems.gage.models.1.0.2.nupkg.sha512",
     "C:\\Users\\frafieuddin\\.nuget\\packages\\gems.webapps\\1.0.33\\gems.webapps.1.0.33.nupkg.sha512",
     "C:\\Users\\frafieuddin\\.nuget\\packages\\htmlsanitizer\\5.0.376\\htmlsanitizer.5.0.376.nupkg.sha512",
     "C:\\Users\\frafieuddin\\.nuget\\packages\\markdig\\0.23.0\\markdig.0.23.0.nupkg.sha512",

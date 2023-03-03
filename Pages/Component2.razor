@@ -1,13 +1,30 @@
 ﻿@using MudBlazor
+@using Gems.Enterprise.WebApp.FirstApplication.Models
+@using System.Reflection
 
 <MudItem xs="12" md="12">
-    <MudCheckBox @bind-Checked="@Option7" Label="7" Color="Color.Default" />
-    <MudCheckBox @bind-Checked="@Option8" Label="8" Color="Color.Primary" />
-    <MudCheckBox @bind-Checked="@Option9" Label="9" Color="Color.Secondary" />
+
+    @if(_loadedProperties.Count > 0)
+    {
+        @foreach(var prop in _loadedProperties)
+        {
+            var value = bool.Parse(prop.GetValue(_Choices).ToString());
+
+            <MudCheckBox T ="bool" Checked="@value" CheckedChanged="(v) => {prop.SetValue(_Choices, v); }" Label="@prop.Name"></MudCheckBox>
+        }
+    }
 </MudItem>
 
 @code {
-    public bool Option7 { get; set; }
-    public bool Option8 { get; set; }
-    public bool Option9 { get; set; }
+
+    // Changing the name of the model would change the list of options available in the component
+    private Options2 _Choices = new Options2();
+
+    private List<PropertyInfo> _loadedProperties;
+
+    protected override void OnInitialized()
+    {
+        _loadedProperties = _Choices.GetType().GetProperties().ToList();
+        base.OnInitialized();
+    }
 }

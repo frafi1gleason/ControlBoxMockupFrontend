@@ -7,16 +7,16 @@ using System.Xml.Linq;
 
 namespace Gems.Enterprise.WebApp.FirstApplication.Models
 {
-    internal class Options
+    internal class Options1
     {
         // Instance Variabless
         private bool option1 = false;
         private bool option2 = false;
         private bool option3 = false;
-        private bool option4 = true;
-        private bool option5 = true;
-        private bool option6 = true;
-        private bool option7 = true;
+        private bool option4 = false;
+        private bool option5 = false;
+        private bool option6 = false;
+        private bool option7 = false;
 
         // Properties
         public bool Option1 {

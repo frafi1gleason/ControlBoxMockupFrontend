@@ -6,15 +6,25 @@
 
 <MudContainer Class="d-flex justify-start flex-grow-1 gap-4" MaxWidth="MaxWidth.Small">
 
-    <RecipeButton @bind-RecipeButtonResult="RecipeButtonResult"/>
+    @*Checking if the list called Items is not null*@
+    @if(Items != null)
+    {
+        @*Two-way binding data with the property in the child component to the property in the parent component "after =" *@
+        <RecipeButton @bind-Recipe = "NewRecipe"/>
+    }
 
     <MudSelect T="Option" @bind-Value="@option" ToStringFunc="@converter" AnchorOrigin="Origin.BottomCenter" Label="Select an option" Variant="Variant.Outlined" Clearable>
-  
-        @foreach (var item in _items)
+        
+        @if(Items != null && Items.Count > 0)
         {
+            @foreach (var item in Items)
+            {
             <MudSelectItem Value="@(new Option() { Name=item})" />
+            }
         }
 
+
+        
     </MudSelect>
 </MudContainer>
 
@@ -43,30 +53,57 @@
 
 @code {
 
+    public string choiceSelected = "";
+
+    bool init = false;
+
+    public List<string> Items { get; set; }
+
+    public string? NewRecipe
+    {
+        get => _NewRecipe;
+        set
+        {
+            _NewRecipe = value;
+            Items.Add(value);
+            StateHasChanged();
+        }
+    }
+
+    private string? _NewRecipe;
+    protected override void OnInitialized()
+    {
+        if(!init)
+        {
+            Items = new List<string>();
+            Items.Add("1");
+            Items.Add("2");
+            Items.Add("3");
+            init = true;
+            StateHasChanged();
+        }
+    }
+    public Boolean isNull = false;
+
+
+    Option option = new Option { Name = "1" };
+
+    // The new option entered in the recipe box
+    private string? _RecipeButtonResult;
 
     public string? RecipeButtonResult
     {
         get => _RecipeButtonResult;
-        set      
+        set
         {
-            _RecipeButtonResult = value;
-            _items.Add(value);
-            StateHasChanged();
+            if (value != _RecipeButtonResult && Items != null && !Items.Contains(value))
+            {
+                _RecipeButtonResult = value;
+                Items.Add(_RecipeButtonResult);
+                StateHasChanged();
+            }
         }
-
     }
-    private string? _RecipeButtonResult;
-
-    public string choiceSelected = "";
-    List<string> _items = new List<string>
-    {
-        "test1", "test2", "test3"
-    };
-
-    public Boolean isNull = false;
-
-    Option option = new Option { Name = "1" };
-
 
     public class Option
     {
@@ -81,21 +118,12 @@
 
         // Note: this is important so the select can compare options
         public override int GetHashCode() => Name.GetHashCode();
-    }
 
+    }
 
     Func<Option, string> converter = p => p?.Name;
 
     
-    //protected override async Task OnInitializedAsync()
-    //{
-        
-    //    SendingItem obj = new SendingItem();
-    //    var recieve = await obj.returnRef();
-    //    newOption = obj.get();
-
-    //    StateHasChanged();
-
-    //}
+  
     
 }

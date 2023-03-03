@@ -23,6 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="GEMS.GAGE.Models" Version="1.0.2" />
 		<PackageReference Include="Gems.WebApps" Version="1.0.33" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.12" />
 		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="7.0.2" />
