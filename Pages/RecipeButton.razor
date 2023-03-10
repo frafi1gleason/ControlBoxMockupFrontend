@@ -3,8 +3,6 @@
 
 <MudButton @onclick="OpenBox" Variant="Variant.Filled" Color="Color.Primary">Recipe</MudButton>
 
-
-
 @code {
 
     // The ? tells that this string can be null
@@ -22,6 +20,8 @@
         }
     }
     private string? _Recipe;
+
+    public Dictionary<string, string>? Dict = new Dictionary<string, string>();
 
     [Parameter]
     public EventCallback<string> RecipeChanged { get; set; }
@@ -41,17 +41,18 @@
         if (dialogResult != null)
         {
             // If the data returned is a tuple, then this block is executed
-            if (dialogResult.Data is Tuple<DialogResult, string>)
-            {
+            if (dialogResult.Data is Tuple<DialogResult, string, Dictionary<string, string>>)
+        {
 
                 // Storing the tuple in convData
-                var convData = dialogResult.Data as Tuple<DialogResult, string>;
+                var convData = dialogResult.Data as Tuple<DialogResult, string, Dictionary<string, string>>;
                 if(convData !=  null)
                 {
 
                     // Retrieving the second item in the tuple i.e., the string that was typed in as the name of the 
                     // custom recipe
                     Recipe = convData.Item2;
+                    Dict = convData.Item3;
                 }
             }
         }

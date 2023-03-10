@@ -1,7 +1,8 @@
 ﻿@using MudBlazor
 @using System.Reflection
 @using Gems.Enterprise.WebApp.FirstApplication.Models
-
+@using GEMS.GAGE.Models.CorrUltima
+@using System.ComponentModel
 
 <MudItem xs="12" md="12">
 
@@ -10,14 +11,24 @@
     {
         @foreach (var prop in _loadedProperties)
         {
+            string displayName = GetAttributeDisplayName(prop);
+
             // Getting the value of the property from the list of loaded properties
-            var value = bool.Parse(prop.GetValue(_Choices).ToString());
+
+            if(prop.PropertyType == typeof(bool))
+            {
+                var value = bool.Parse(prop.GetValue(choices).ToString());
+                <MudCheckBox T="bool" Checked="@value" CheckedChanged="(v) => { prop.SetValue(choices, v); }" Label="@displayName" />
+            }
+
+            if(prop.PropertyType == typeof(int))
+            {
+                var intValue = int.Parse(prop.GetValue(choices).ToString());
+                <MudNumericField T="int" Value="@intValue" ValueChanged="(v) => { prop.SetValue(choices, v); }" Label="@displayName" Variant="Variant.Outlined" />
+            }
 
             // This tag uses reflection to reflect the properties present in the model and actively sets them on checking
-            <MudCheckBox T="bool"
-             Checked="@value"
-             CheckedChanged="(v) => { prop.SetValue(_Choices, v); }"
-             Label="@prop.Name" />
+
 
         }
     }
@@ -27,14 +38,26 @@
 @code {
 
     // Changing the name of the model would change the list of options available in the component
-    private Options1 _Choices = new Options1();
+    // private Options1 _Choices = new Options1();
+
+    private MatrixRecipe choices = new MatrixRecipe();
 
     private List<PropertyInfo> _loadedProperties;
 
     protected override void OnInitialized()
     {
-        _loadedProperties = _Choices.GetType().GetProperties().ToList();
+        _loadedProperties = choices.GetType().GetProperties().ToList();
         StateHasChanged();
+    }
+
+    // Fetches the display name attribute for the reflected property
+    private string GetAttributeDisplayName(PropertyInfo property)
+    {
+        var atts = property.GetCustomAttributes(
+            typeof(DisplayNameAttribute), true);
+        if (atts.Length == 0)
+            return null;
+        return (atts[0] as DisplayNameAttribute).DisplayName;
     }
 
 }

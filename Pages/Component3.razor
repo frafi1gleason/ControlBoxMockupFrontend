@@ -1,29 +1,59 @@
 ﻿@using MudBlazor
 @using Gems.Enterprise.WebApp.FirstApplication.Models
 @using System.Reflection
+@using GEMS.GAGE.Models.CorrUltima
+@using System.ComponentModel
 
 <MudItem xs="12" md="12">
 
-    @if(_loadedProperties.Count > 0)
+ @*Two way binding the reflected properties*@ 
+    @if (_loadedProperties?.Count > 0)
     {
-        @foreach(var prop in _loadedProperties)
+        @foreach (var prop in _loadedProperties)
         {
-            var value = bool.Parse(prop.GetValue(_Choices).ToString());
 
-            <MudCheckBox T ="bool" Checked="@value" CheckedChanged="(v) => {prop.SetValue(_Choices, v); }" Label="@prop.Name"></MudCheckBox>
+            string displayName = GetAttributeDisplayName(prop);
+
+            // if block for different Types of properties
+            if(prop.PropertyType == typeof(bool))
+            {
+                // Getting the value of the properties and binding them with the checkbox
+                var value = bool.Parse(prop.GetValue(choices).ToString());
+                <MudCheckBox T="bool" Checked="@value" CheckedChanged="(v) => { prop.SetValue(choices, v); }" Label="@displayName" />
+            }
+
+            if(prop.PropertyType == typeof(int))
+            {
+                // Getting the value of the properties and binding them with the checkbox
+                var intValue = int.Parse(prop.GetValue(choices).ToString());
+                <MudNumericField T="int" Value="@intValue" ValueChanged="(v) => { prop.SetValue(choices, v); }" Label="@displayName" Variant="Variant.Outlined" />
+            }
+
+            // This tag uses reflection to reflect the properties present in the model and actively sets them on checking
+
+
         }
     }
 </MudItem>
 
 @code {
     // Changing the name of the model would change the list of options available in the component
-    private Options3 _Choices = new Options3();
+    private MatrixRecipe choices = new MatrixRecipe();
 
     private List<PropertyInfo> _loadedProperties;
 
     protected override void OnInitialized()
     {
-        _loadedProperties = _Choices.GetType().GetProperties().ToList();
+        _loadedProperties = choices.GetType().GetProperties().ToList();
         base.OnInitialized();
+    }
+
+    private string GetAttributeDisplayName(PropertyInfo property)
+    {
+        var atts = property.GetCustomAttributes(
+            typeof(DisplayNameAttribute), true);
+        if (atts.Length == 0)
+            return null;
+        return (atts[0] as DisplayNameAttribute).DisplayName;
     }
 }

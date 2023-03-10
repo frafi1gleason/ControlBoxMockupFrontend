@@ -1,13 +1,14 @@
 ﻿@using MudBlazor
 @using System.Reflection
-
+@using GEMS.GAGE.Models.CorrUltima
+@using System.ComponentModel
+@using System.Collections.Generic
 
 <MudText Typo="Typo.h6">Optimization Matrix</MudText>
-
 <MudContainer Class="d-flex justify-start flex-grow-1 gap-4" MaxWidth="MaxWidth.Small">
 
     @*Checking if the list called Items is not null*@
-    @if(Items != null)
+    @if(ListofDefaults != null)
     {
         @*Two-way binding data with the property in the child component to the property in the parent component "after =" *@
         <RecipeButton @bind-Recipe = "NewRecipe"/>
@@ -15,96 +16,128 @@
 
     <MudSelect T="Option" @bind-Value="@option" ToStringFunc="@converter" AnchorOrigin="Origin.BottomCenter" Label="Select an option" Variant="Variant.Outlined" Clearable>
         
-        @if(Items != null && Items.Count > 0)
+        @if(ListofDefaults != null && ListofDefaults.Count > 0)
         {
-            @foreach (var item in Items)
+            @foreach (var item in ListofDefaults)
             {
-            <MudSelectItem Value="@(new Option() { Name=item})" />
+            <MudSelectItem Value="@(new Option() { Name=item.Name})" />
             }
         }
-
-
-        
     </MudSelect>
 </MudContainer>
+
+
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudExpansionPanel IsExpanded="true" Text="Values">
         <MudText Type="Type.h6" Class="mud-width-full">
-            @if (@option.Name.Equals("1"))
+
+            
+            @*Displaying all the default recipes*@
+            @if (ListofDefaults.Count > 0)
             {
-                <Component1 />
+                @foreach (var opt in ListofDefaults)
+                {                  
+                    @if(opt.Name.Equals(option.Name))
+                    {                  
+                        List<PropertyInfo> _defaultProperties = opt.GetType().GetProperties().ToList();                          
+                        
+                        @foreach(var variable in _defaultProperties)
+                        {
+                            string displayName = GetAttributeDisplayName(variable);
+                            @if(variable.PropertyType == typeof(int))
+                            {
+                                var intValue = int.Parse(variable.GetValue(opt).ToString());
+
+                                @if(intValue >= 0)
+                                {
+                                     <MudTextField @bind-Value="@intValue" Label="@displayName" ReadOnly="true" Variant="Variant.Filled" />
+                                }
+
+                            }
+                            @if(variable.PropertyType == typeof(bool))
+                            {
+                                var value = bool.Parse(variable.GetValue(opt).ToString());
+                                
+
+                                @if (value.Equals(true))
+                                {
+                                    <MudCheckBox T="bool" Checked="@value" CheckedChanged="(v) => { variable.SetValue(opt, v); }" Label="@displayName" Disabled="true" Color="Color.Tertiary" />
+                                    
+                                }
+
+                            }
+                        }
+                        
+                    }
+                          
+                }
             }
-            @if (@option.Name.Equals("2"))
-            {
-                <Component2 />
-            }
-            @if (@option.Name.Equals("3"))
-            {
-                <Component3 />
-            }
-            @if (@option.Name.Equals(null))
-            {
-                isNull = true;
-            }
+
+
         </MudText>
     </MudExpansionPanel>
 </MudContainer>
 
 @code {
+    private List<MatrixRecipe> ListofDefaults { get; set; }
+
+    private List<bool> ListofBools = new List<bool>();
+
+    // Property info list for reflecting the properties from the options chose
+    private List<PropertyInfo> _loadedProperties;
+
+    Option option;
 
     public string choiceSelected = "";
 
     bool init = false;
 
-    public List<string> Items { get; set; }
-
     public string? NewRecipe
     {
         get => _NewRecipe;
         set
-        {
+        {   
             _NewRecipe = value;
-            Items.Add(value);
+            ListofDefaults.Add(new MatrixRecipe{Name = value});
             StateHasChanged();
         }
     }
 
     private string? _NewRecipe;
+
+    // OnInitalized, instantiating the list containing the default matrix recipes with a parallel list of
+    // all their names
     protected override void OnInitialized()
     {
         if(!init)
         {
-            Items = new List<string>();
-            Items.Add("1");
-            Items.Add("2");
-            Items.Add("3");
+            ListofDefaults = MatrixRecipe.GenerateDefaults();
+
+            foreach (var items in ListofDefaults)
+            {
+                _loadedProperties = items.GetType().GetProperties().ToList();
+            }
+            option = new Option() { Name = ListofDefaults[0].Name };
+
+
             init = true;
             StateHasChanged();
         }
     }
-    public Boolean isNull = false;
 
-
-    Option option = new Option { Name = "1" };
-
-    // The new option entered in the recipe box
-    private string? _RecipeButtonResult;
-
-    public string? RecipeButtonResult
+    // Method gets the DisplayName attribute of the property
+    private string GetAttributeDisplayName(PropertyInfo property)
     {
-        get => _RecipeButtonResult;
-        set
+        var atts = property.GetCustomAttributes(typeof(DisplayNameAttribute), true);
+        if (atts.Length == 0)
         {
-            if (value != _RecipeButtonResult && Items != null && !Items.Contains(value))
-            {
-                _RecipeButtonResult = value;
-                Items.Add(_RecipeButtonResult);
-                StateHasChanged();
-            }
+            return null;
         }
+        return (atts[0] as DisplayNameAttribute).DisplayName;
     }
 
+    // Options in MudSelect
     public class Option
     {
         public string Name { get; set; }
@@ -122,8 +155,5 @@
     }
 
     Func<Option, string> converter = p => p?.Name;
-
-    
-  
     
 }

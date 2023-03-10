@@ -1,6 +1,10 @@
 ﻿@using MudBlazor
 @using Gems.Enterprise.WebApp.FirstApplication.Models
 @using System.Reflection
+@using System.Dynamic
+@using GEMS.GAGE.Models.CorrUltima
+@using System.ComponentModel
+
 
 <MudItem xs="12" md="12">
 
@@ -8,41 +12,141 @@
     {
         @foreach(var prop in _loadedProperties)
         {
-            var value = bool.Parse(prop.GetValue(_Choices).ToString());
+            string displayName = GetAttributeDisplayName(prop);
 
-            <MudCheckBox T ="bool" Checked="@value" CheckedChanged="(v) => {prop.SetValue(_Choices, v); }" Label="@prop.Name"></MudCheckBox>
+           
+            if(prop.PropertyType == typeof(bool))
+            {
+                // if (v.Equals(true)) { if (!Selected.ContainsKey(prop.Name)) { Selected.Add(prop.Name, value.ToString()); } }
+                var value = bool.Parse(prop.GetValue(choices).ToString());
 
-            _selectedChoices[prop.Name] = value;
+                if(value.Equals(true))
+                {
+                    if(!selectedOptions.Contains(prop.Name))
+                    {
+                        selectedOptions.Add(prop.Name);
+                    }
+                }
+                if(value.Equals(false))
+                {
+                    if(selectedOptions.Contains(prop.Name))
+                    {
+                        selectedOptions.Remove(prop.Name);
+                    }
+                }
 
+                <MudCheckBox T="bool" Checked="@value" CheckedChanged="(v) => { prop.SetValue(choices, v); }" Label="@displayName" />
+                
+            }         
         }
-        
     }
+
+</MudItem>
+
+<MudItem xs="12" md="12">
+
+    @if (_loadedProperties.Count > 0)
+    {
+        @foreach (var prop in _loadedProperties)
+        {
+            string displayName = GetAttributeDisplayName(prop);
+            
+            if(prop.PropertyType == typeof(int))
+            {
+
+                var intValue = int.Parse(prop.GetValue(choices).ToString());
+
+                if(intValue == 0)
+                {
+                    if(!selectedOptions.Contains(prop.Name))
+                    {
+                        selectedOptions.Add(prop.Name);
+                    }
+                }
+                if(intValue == -1)
+                {
+                    if(selectedOptions.Contains(prop.Name))
+                    {
+                        selectedOptions.Remove(prop.Name);
+                    }
+                }
+
+                <MudSelect bind-Value="@intValue" ValueChanged="(v) => { prop.SetValue(choices, v); }" T="int" Label="@displayName">
+                    <MudSelectItem Value="@(-1)">Off</MudSelectItem>
+                    <MudSelectItem Value="@(0)">0</MudSelectItem>
+                </MudSelect>
+
+            }            
+        }
+            
+    }
+
+    @if(selectedOptions.Count > 0)
+    {
+        <h6>@string.Join(",", selectedOptions)</h6>
+    }
+
 </MudItem>
 
 @code {
-
     // Changing the name of the model would change the list of options available in the component
-    private AllOptions _Choices = new AllOptions();
+    private MatrixRecipe choices = new MatrixRecipe();
+
+    private List<string> selectedOptions = new List<string>();
+
+    private string defaultValue = "Off";
 
     // Helper variable for building the dictionary with the inital data from the model
     private string name = "";
 
+    private string? SelectedValue { get; set; }
+
+    [Parameter]
+    public Dictionary<string, string>? Selected { get; set; }
+
+    [Parameter]
+    public EventCallback<Dictionary<string, string>> SelectedChanged { get; set; }
+
     // Dictionary that actively stores all the names of the options selected and their active state i.e., true or false (true means would be included and vice versa)
-    private Dictionary<string, bool> _selectedChoices = new Dictionary<string, bool>();
 
     private List<PropertyInfo> _loadedProperties;
 
+    private async Task NotifySelectedChanged()
+    {
+        await SelectedChanged.InvokeAsync(Selected);
+    }
+
+
     protected override void OnInitialized()
     {
-        _loadedProperties = _Choices.GetType().GetProperties().ToList();
+        _loadedProperties = choices.GetType().GetProperties().ToList();
+        Selected = new Dictionary<string, string>();
+
         foreach(PropertyInfo variable in _loadedProperties)
         {
-            bool value = bool.Parse(variable.GetValue(_Choices).ToString());
+            if(variable.PropertyType == typeof(bool))
+            {
+                var value = bool.Parse(variable.GetValue(choices).ToString());
+                Selected.Add(variable.Name, value.ToString());                
+            }
 
-            name = variable.Name;
-
-            _selectedChoices.Add(name, value);
+            if(variable.PropertyType == typeof(int))
+            {
+                var intValue = int.Parse(variable.GetValue(choices).ToString());
+                Selected.Add(variable.Name, intValue.ToString());
+            }
+            
         }
         base.OnInitialized();
+    }
+
+    // Fetches the display name attribute for the reflected property
+    private string GetAttributeDisplayName(PropertyInfo property)
+    {
+        var atts = property.GetCustomAttributes(
+            typeof(DisplayNameAttribute), true);
+        if (atts.Length == 0)
+            return null;
+        return (atts[0] as DisplayNameAttribute).DisplayName;
     }
 }

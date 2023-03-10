@@ -17,6 +17,7 @@ namespace Gems.Enterprise.WebApp.FirstApplication.Models
         private bool option5 = false;
         private bool option6 = false;
         private bool option7 = false;
+        private int option8;
 
         // Properties
         public bool Option1 {
@@ -47,6 +48,12 @@ namespace Gems.Enterprise.WebApp.FirstApplication.Models
         public bool Option7 {
             get { return option7; }   // get method
             set { option7 = value; }
+        }
+
+        public int Option8
+        {
+            get { return option8; }
+            set { option8 = value; }
         }
     }
 }
