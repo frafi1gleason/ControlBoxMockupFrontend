@@ -1,34 +1,33 @@
 ﻿@using MudBlazor
 @inject IDialogService DialogService
+@using GEMS.GAGE.Models.CorrUltima
 
 <MudButton @onclick="OpenBox" Variant="Variant.Filled" Color="Color.Primary">Recipe</MudButton>
 
 @code {
 
-    // The ? tells that this string can be null
     [Parameter]
-    public string? Recipe
-    {
-        get => _Recipe;
+    public List<MatrixRecipe> Recipes { 
+        get
+        {
+            return _recipes;
+        }
         set
         {
-            if(value != null && value != _Recipe)
-            {
-                _Recipe = value;
-                NotifyRecipesUpdated();
-            }
+            _recipes = value;
+            
         }
-    }
-    private string? _Recipe;
 
-    public Dictionary<string, string>? Dict = new Dictionary<string, string>();
+
+    }
+    private List<MatrixRecipe> _recipes;
 
     [Parameter]
-    public EventCallback<string> RecipeChanged { get; set; }
+    public EventCallback<List<MatrixRecipe>> RecipesChanged { get; set; }
 
     private async Task NotifyRecipesUpdated()
     {
-        await RecipeChanged.InvokeAsync(Recipe);
+        await RecipesChanged.InvokeAsync(Recipes);
     }
 
     // Getting the text in the text field present in the dialog box.
@@ -36,23 +35,24 @@
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
+        var dialogParams = new DialogParameters();
+        dialogParams.Add("Recipes", Recipes);
+
         // awaiting the result of Dialog Box being closed. Doesn't cause other tasks to halt.
-        var dialogResult = await DialogService.Show<RecipeBox>("Simple Dialog", options).Result;
+        var dialogResult = await DialogService.Show<RecipeBox>("Simple Dialog", dialogParams, options).Result;
         if (dialogResult != null)
         {
             // If the data returned is a tuple, then this block is executed
-            if (dialogResult.Data is Tuple<DialogResult, string, Dictionary<string, string>>)
-        {
+            if (dialogResult.Data is Tuple<DialogResult, MatrixRecipe>)
+            {
 
                 // Storing the tuple in convData
-                var convData = dialogResult.Data as Tuple<DialogResult, string, Dictionary<string, string>>;
+                var convData = dialogResult.Data as Tuple<DialogResult, MatrixRecipe>;
                 if(convData !=  null)
                 {
 
-                    // Retrieving the second item in the tuple i.e., the string that was typed in as the name of the 
-                    // custom recipe
-                    Recipe = convData.Item2;
-                    Dict = convData.Item3;
+                    Recipes.Add(convData.Item2);
+                    NotifyRecipesUpdated();
                 }
             }
         }

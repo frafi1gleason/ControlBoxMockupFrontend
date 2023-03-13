@@ -8,17 +8,17 @@
 <MudContainer Class="d-flex justify-start flex-grow-1 gap-4" MaxWidth="MaxWidth.Small">
 
     @*Checking if the list called Items is not null*@
-    @if(ListofDefaults != null)
+    @if(RecipeList != null)
     {
         @*Two-way binding data with the property in the child component to the property in the parent component "after =" *@
-        <RecipeButton @bind-Recipe = "NewRecipe"/>
+        <RecipeButton @bind-Recipes="RecipeList"/>
     }
 
     <MudSelect T="Option" @bind-Value="@option" ToStringFunc="@converter" AnchorOrigin="Origin.BottomCenter" Label="Select an option" Variant="Variant.Outlined" Clearable>
         
-        @if(ListofDefaults != null && ListofDefaults.Count > 0)
+        @if(RecipeList != null && RecipeList.Count > 0)
         {
-            @foreach (var item in ListofDefaults)
+            @foreach (var item in RecipeList)
             {
             <MudSelectItem Value="@(new Option() { Name=item.Name})" />
             }
@@ -34,9 +34,9 @@
 
             
             @*Displaying all the default recipes*@
-            @if (ListofDefaults.Count > 0)
+            @if (RecipeList.Count > 0)
             {
-                @foreach (var opt in ListofDefaults)
+                @foreach (var opt in RecipeList)
                 {                  
                     @if(opt.Name.Equals(option.Name))
                     {                  
@@ -80,7 +80,19 @@
 </MudContainer>
 
 @code {
-    private List<MatrixRecipe> ListofDefaults { get; set; }
+    public List<MatrixRecipe> RecipeList
+    {
+        get
+        {
+            return _recipeList;
+        }   
+        set
+        {
+            _recipeList = value;
+        }
+    }
+
+    private List<MatrixRecipe> _recipeList;
 
     private List<bool> ListofBools = new List<bool>();
 
@@ -99,7 +111,7 @@
         set
         {   
             _NewRecipe = value;
-            ListofDefaults.Add(new MatrixRecipe{Name = value});
+            RecipeList.Add(new MatrixRecipe{Name = value});
             StateHasChanged();
         }
     }
@@ -112,13 +124,13 @@
     {
         if(!init)
         {
-            ListofDefaults = MatrixRecipe.GenerateDefaults();
+            RecipeList = MatrixRecipe.GenerateDefaults();
 
-            foreach (var items in ListofDefaults)
+            foreach (var items in RecipeList)
             {
                 _loadedProperties = items.GetType().GetProperties().ToList();
             }
-            option = new Option() { Name = ListofDefaults[0].Name };
+            option = new Option() { Name = RecipeList[0].Name };
 
 
             init = true;

@@ -12,13 +12,15 @@
                 <MudTextField oninput="@TextValueChanged" @bind-Value="@TextValue" Label="Name" Variant="Variant.Filled"></MudTextField>
 
                 @*This component would have all the properties that are available in the current context*@
-                <AllComponents @bind-Selected="RecievedItems"></AllComponents>
+                <AllComponents></AllComponents>
 
-                @if(RecievedItems.ContainsKey("Option1"))
+                    @*@bind-Selected="RecievedItems""*@
+
+               @* @if(RecievedItems.ContainsKey("Option1"))
                 {
                     <h6>@RecievedItems["Option1"]</h6>
                 }
-
+*@
         </MudPaper>
 </MudContainer>
     </DialogContent>
@@ -29,19 +31,36 @@
 </MudDialog>
 
 @code {
-    private MatrixRecipe choices = new MatrixRecipe();
+    private MatrixRecipe _choices = new MatrixRecipe();
 
     bool init = false;
 
     [Parameter]
-    public string TextValue { get; set; }
+    public List<MatrixRecipe> Recipes
+    {
+        get
+        {
+            return _recipes;
+        }
+        set
+        {
+            _recipes = value;
+
+        }
+
+
+    }
+    private List<MatrixRecipe> _recipes;
 
     [Parameter]
-    public Dictionary<string, string>? RecievedItems { get; set; }
-    
+    public string TextValue { get; set; }
+
+    //[Parameter]
+    //public Dictionary<string, string>? RecievedItems { get; set; }
+
     protected override void OnInitialized()
     {
-        RecievedItems = new Dictionary<string, string>();
+        // RecievedItems = new Dictionary<string, string>();
         base.OnInitialized();
     }
 
@@ -56,7 +75,13 @@
 
     void Submit()
     {
-        MudDialog.Close(new Tuple<DialogResult, string, Dictionary<string, string>>(DialogResult.Ok(true), TextValue, RecievedItems));
+        _choices.Name = TextValue;
+        if(Recipes.Count(x => x.Name == TextValue) == 0)
+        {
+            MudDialog.Close(new Tuple<DialogResult, MatrixRecipe>(DialogResult.Ok(true), _choices));
+        }
+        // TODO add else afterwards        
+
     }
     void Cancel() => MudDialog.Cancel();
 }
