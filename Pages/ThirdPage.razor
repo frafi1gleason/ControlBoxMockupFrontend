@@ -2,8 +2,6 @@
 
 @using MudBlazor
 @using System.Reflection
-@using Gems.Enterprise.WebApp.FirstApplication.Models
-
 
 @inject GemsEnterprisePluginHelper PluginHelper
 @inject NavigationManager NavigationManager
@@ -12,27 +10,9 @@
 <MudText Typo="Typo.h6" Color="Color.Primary">@PluginHelper.Translate("page-three-title")</MudText>
 <MudButton StartIcon="@Icons.Material.Filled.Home" Color="Color.Inherit" Href="gems-enterprise-gproduction-GemsEnterpriseApp">@PluginHelper.Translate("page-three-prompt")</MudButton>
 
-@if(_loadedProperties?.Count > 0)
-{
-   @foreach(var prop in _loadedProperties)
-    {
-        bool propVal = (bool)prop.GetValue(_Person);
-        var propStr = prop.Name;
-        
-        <h1>Name is @propStr and value is @propVal</h1>
-        <button class="btn btn-primary" onclick="changed">Click Me!</button>       
-    }
-}
-
 
 @code 
 {
-
-    private Options1 _Person = new Options1();
-    private List<PropertyInfo> _loadedProperties;
-
-    
-
     protected override void OnInitialized()
     {
 
@@ -47,8 +27,6 @@
                 PluginHelper.SetUserPrompt("page-three-prompt");
 
                 // Add additional code as needed
-                _loadedProperties = _Person.GetType().GetProperties().ToList();
-                StateHasChanged();
 
                 PluginHelper.WebAppLogger.LogInfo($"Successful initialization of ThirdPage");
             }

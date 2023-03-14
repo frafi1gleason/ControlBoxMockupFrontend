@@ -1,11 +1,13 @@
-﻿@using MudBlazor
+﻿@using GEMS.GAGE.Models.CorrUltima
+
 @inject IDialogService DialogService
-@using GEMS.GAGE.Models.CorrUltima
+
 
 <MudButton @onclick="OpenBox" Variant="Variant.Filled" Color="Color.Primary">Recipe</MudButton>
 
 @code {
 
+    // Property and variable holding the list of Recipes
     [Parameter]
     public List<MatrixRecipe> Recipes { 
         get
@@ -16,11 +18,10 @@
         {
             _recipes = value;  
         }
-
-
     }
     private List<MatrixRecipe> _recipes;
 
+    // EventCallBack that tells the List of Recipes has been changed
     [Parameter]
     public EventCallback<List<MatrixRecipe>> RecipesChanged { get; set; }
 
@@ -38,7 +39,7 @@
         dialogParams.Add("Recipes", Recipes);
 
         // awaiting the result of Dialog Box being closed. Doesn't cause other tasks to halt.
-        var dialogResult = await DialogService.Show<RecipeBox>("Simple Dialog", dialogParams, options).Result;
+        var dialogResult = await DialogService.Show<RecipeBox>("Recipe Editor", dialogParams, options).Result;
         if (dialogResult != null)
         {
             // If the data returned is a tuple, then this block is executed
@@ -49,7 +50,6 @@
                 var convData = dialogResult.Data as Tuple<DialogResult, MatrixRecipe>;
                 if(convData !=  null)
                 {
-
                     Recipes.Add(convData.Item2);
                     NotifyRecipesUpdated();
                 }

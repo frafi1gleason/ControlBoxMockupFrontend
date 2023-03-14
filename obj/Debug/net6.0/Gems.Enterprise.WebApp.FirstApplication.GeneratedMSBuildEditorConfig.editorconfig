@@ -16,22 +16,6 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\frafieuddin\source\repos\Gems.Enterprise.WebApp.FirstApplication
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/frafieuddin/source/repos/Gems.Enterprise.WebApp.FirstApplication/Pages/AllComponents.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWxsQ29tcG9uZW50cy5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/frafieuddin/source/repos/Gems.Enterprise.WebApp.FirstApplication/Pages/Component1.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50MS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/frafieuddin/source/repos/Gems.Enterprise.WebApp.FirstApplication/Pages/Component2.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50Mi5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/frafieuddin/source/repos/Gems.Enterprise.WebApp.FirstApplication/Pages/Component3.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50My5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/frafieuddin/source/repos/Gems.Enterprise.WebApp.FirstApplication/Pages/List.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTGlzdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 

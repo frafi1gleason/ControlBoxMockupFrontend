@@ -1,7 +1,8 @@
-﻿@using MudBlazor
-@using System.Reflection
+﻿@using System.Reflection
 @using GEMS.GAGE.Models.CorrUltima
 @using System.ComponentModel
+
+@inject IDialogService DialogService
 
 @*Dialog box that displays a text box and a list of options. Writing a string in the text box and choosing the relevant
     options would make a custom option
@@ -11,114 +12,79 @@
         <MudContainer Label="Optimization Matrix" MaxWidth="MaxWidth.Small">
             <MudPaper Class="pa-16 ma-2" Color="Lighten1" Label="Optimization Matrix" Outlined="true" Square="true">
                 <MudTextField oninput="@TextValueChanged" @bind-Value="@TextValue" Label="Name" Variant="Variant.Filled"></MudTextField>
+                
+                <div class="d-inline">
+                    @*This component would have all the properties that are available in the current context*@
 
-    @*This component would have all the properties that are available in the current context*@
-    <MudItem xs="12" md="12">
-
-        @if(_loadedProperties.Count > 0)
-        {
-            @foreach(var prop in _loadedProperties)
-            {
-                string displayName = GetAttributeDisplayName(prop);
+                    @if(_loadedProperties.Count > 0)
+                    {
+                        @foreach(var prop in _loadedProperties)
+                        {
+                            string displayName = GetAttributeDisplayName(prop);
 
            
-                if(prop.PropertyType == typeof(bool))
-                {
-                    // if (v.Equals(true)) { if (!Selected.ContainsKey(prop.Name)) { Selected.Add(prop.Name, value.ToString()); } }
-                    var value = bool.Parse(prop.GetValue(_choices).ToString());
+                            if(prop.PropertyType == typeof(bool))
+                            {
+                                var value = bool.Parse(prop.GetValue(_choices).ToString());
 
-                    if(value.Equals(true))
-                    {
-                        if(!selectedOptions.Contains(prop.Name))
-                        {
-                            selectedOptions.Add(prop.Name);
-                        }
-                    }
-                    if(value.Equals(false))
-                    {
-                        if(selectedOptions.Contains(prop.Name))
-                        {
-                            selectedOptions.Remove(prop.Name);
-                        }
-                    }
-
-                    <MudCheckBox T="bool" Checked="@value" CheckedChanged="(v) => { prop.SetValue(_choices, v); }" Label="@displayName" />
+                                <MudCheckBox T="bool" Checked="@value" CheckedChanged="(v) => { prop.SetValue(_choices, v); }" Label="@displayName" />
                 
-                }         
-            }
-        }
-
-    </MudItem>
-
-    <MudItem xs="12" md="12">
-
-        @if (_loadedProperties.Count > 0)
-        {
-            @foreach (var prop in _loadedProperties)
-            {
-                string displayName = GetAttributeDisplayName(prop);
-            
-                if(prop.PropertyType == typeof(int))
-                {
-
-                    var intValue = int.Parse(prop.GetValue(_choices).ToString());
-
-                    if(intValue == 0)
-                    {
-                        if(!selectedOptions.Contains(prop.Name))
-                        {
-                            selectedOptions.Add(prop.Name);
-                        }
-                    }
-                    if(intValue == -1)
-                    {
-                        if(selectedOptions.Contains(prop.Name))
-                        {
-                            selectedOptions.Remove(prop.Name);
+                            }         
                         }
                     }
 
-                    <MudSelect bind-Value="@intValue" ValueChanged="(v) => { prop.SetValue(_choices, v); }" T="int" Label="@displayName">
-                        <MudSelectItem Value="@(-1)">Off</MudSelectItem>
-                        <MudSelectItem Value="@(0)">0</MudSelectItem>
-                    </MudSelect>
+                </div>
 
-                }            
-            }
+                <div class="d-inline">
+
+                    @if (_loadedProperties.Count > 0)
+                    {
+                        @foreach (var prop in _loadedProperties)
+                        {
+                            string displayName = GetAttributeDisplayName(prop);
             
-        }
+                            if(prop.PropertyType == typeof(int))
+                            {
 
-        @if(selectedOptions.Count > 0)
-        {
-            <h6>@string.Join(",", selectedOptions)</h6>
-        }
+                                var intValue = int.Parse(prop.GetValue(_choices).ToString());
 
-    </MudItem>
+                                <MudSelect bind-Value="@intValue" ValueChanged="(v) => { prop.SetValue(_choices, v); }" T="int" Label="@displayName">
+                                    <MudSelectItem Value="-1">Off</MudSelectItem>
+                                    <MudSelectItem Value="0">0</MudSelectItem>
+                                    <MudSelectItem Value="1">1</MudSelectItem>
+                                    <MudSelectItem Value="2">2</MudSelectItem>
+                                    <MudSelectItem Value="3">3</MudSelectItem>
+                                    <MudSelectItem Value="4">4</MudSelectItem>
+                                    <MudSelectItem Value="5">5</MudSelectItem>
+                                    <MudSelectItem Value="6">6</MudSelectItem>
+                                </MudSelect>
 
-     </MudPaper>
+                            }            
+                        }
+            
+                    }
+
+                </div>
+         </MudPaper>
     </MudContainer>
 </DialogContent>
+
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
     </DialogActions>
+
 </MudDialog>
 
 @code {
     private MatrixRecipe _choices = new MatrixRecipe();
 
-
+    // List storing the selected options in the list
     private List<string> selectedOptions = new List<string>();
-
-    private string defaultValue = "Off";
-
-    // Helper variable for building the dictionary with the inital data from the model
-    private string name = "";
 
     private string? SelectedValue { get; set; }
 
     private List<PropertyInfo> _loadedProperties;
-
 
     protected override void OnInitialized()
     {
@@ -137,8 +103,7 @@
         return (atts[0] as DisplayNameAttribute).DisplayName;
     }
 
-    bool init = false;
-
+    // Property and variable holding the Recipes
     [Parameter]
     public List<MatrixRecipe> Recipes
     {
@@ -149,10 +114,9 @@
         set
         {
             _recipes = value;
-
         }
-
     }
+
     private List<MatrixRecipe> _recipes;
 
     [Parameter]
@@ -169,13 +133,41 @@
 
     void Submit()
     {
+
         _choices.Name = TextValue;
         if(Recipes.Count(x => x.Name == TextValue) == 0)
         {
             MudDialog.Close(new Tuple<DialogResult, MatrixRecipe>(DialogResult.Ok(true), _choices));
         }
-        // TODO add else afterwards        
-
+        // TODO add else afterwards  
+        else
+        {
+            MessageBox();
+        }
+        if(TextValue == null)
+        {
+            MessageBoxNameDNE();
+        }
     }
     void Cancel() => MudDialog.Cancel();
+
+    private async void MessageBox()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "",
+            "Name already exists",
+            yesText: "OK", cancelText:null);
+        StateHasChanged();
+    }
+
+    private async void MessageBoxNameDNE()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "",
+            "Please enter the name of the recipe",
+            yesText: "OK", cancelText: null);
+        StateHasChanged();
+    }
+
+
 }

@@ -1,8 +1,9 @@
-﻿@using MudBlazor
-@using System.Reflection
+﻿@using System.Reflection
 @using GEMS.GAGE.Models.CorrUltima
 @using System.ComponentModel
 @using System.Collections.Generic
+
+@inject IDialogService DialogService
 
 <MudText Typo="Typo.h6">Optimization Matrix</MudText>
 <MudContainer Class="d-flex justify-start flex-grow-1 gap-4" MaxWidth="MaxWidth.Small">
@@ -27,7 +28,6 @@
 </MudContainer>
 
 
-
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudExpansionPanel IsExpanded="true" Text="Values">
         <MudText Type="Type.h6" Class="mud-width-full">
@@ -37,40 +37,41 @@
             @if (RecipeList.Count > 0)
             {
                 @foreach (var opt in RecipeList)
-                {                  
-                    @if(opt.Name.Equals(option.Name))
-                    {                  
-                        List<PropertyInfo> _defaultProperties = opt.GetType().GetProperties().ToList();                          
-                        
-                        @foreach(var variable in _defaultProperties)
+                {
+ 
+                    @if (opt.Name.Equals(option.Name))
+                    {
+                        List<PropertyInfo> _defaultProperties = opt.GetType().GetProperties().ToList();
+
+                        @foreach (var variable in _defaultProperties)
                         {
                             string displayName = GetAttributeDisplayName(variable);
-                            @if(variable.PropertyType == typeof(int))
+                            @if (variable.PropertyType == typeof(int))
                             {
                                 var intValue = int.Parse(variable.GetValue(opt).ToString());
 
-                                @if(intValue >= 0)
+                                @if (intValue >= 0)
                                 {
-                                     <MudTextField @bind-Value="@intValue" Label="@displayName" ReadOnly="true" Variant="Variant.Filled" />
+                                    <MudTextField @bind-Value="@intValue" Label="@displayName" ReadOnly="true" Variant="Variant.Filled" />
                                 }
 
                             }
-                            @if(variable.PropertyType == typeof(bool))
+                            @if (variable.PropertyType == typeof(bool))
                             {
                                 var value = bool.Parse(variable.GetValue(opt).ToString());
-                                
+
 
                                 @if (value.Equals(true))
                                 {
                                     <MudCheckBox T="bool" Checked="@value" CheckedChanged="(v) => { variable.SetValue(opt, v); }" Label="@displayName" Disabled="true" Color="Color.Tertiary" />
-                                    
+
                                 }
 
                             }
                         }
-                        
+
                     }
-                          
+      
                 }
             }
 
@@ -80,6 +81,8 @@
 </MudContainer>
 
 @code {
+
+    // Property and variable for the List of Recipes
     public List<MatrixRecipe> RecipeList
     {
         get
@@ -101,10 +104,9 @@
 
     Option option;
 
-    public string choiceSelected = "";
-
     bool init = false;
 
+    // Property and variable for a new Recipe being added
     public string? NewRecipe
     {
         get => _NewRecipe;
@@ -118,8 +120,7 @@
 
     private string? _NewRecipe;
 
-    // OnInitalized, instantiating the list containing the default matrix recipes with a parallel list of
-    // all their names
+    // OnInitalized, instantiating the list containing the default matrix recipes
     protected override void OnInitialized()
     {
         if(!init)
@@ -167,5 +168,6 @@
     }
 
     Func<Option, string> converter = p => p?.Name;
-    
+
+
 }
